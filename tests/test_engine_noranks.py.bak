@@ -1,16 +1,3 @@
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import zip
-from builtins import map
-from builtins import filter
-from builtins import range
-from builtins import *
-from past.utils import old_div
 import sys, unittest, string
 from random import randint, choice
 from itertools import *
@@ -128,10 +115,10 @@ class ModelTest( unittest.TestCase ):
             #funcs  = [ partial( get, attr=attr ) for attr in 'ABC' ]
             funcs = []
             # map to the data
-            values = [ list(map( f, states )) for f in funcs ]
+            values = [ map( f, states ) for f in funcs ]
             
             # filter for true value
-            trues  = [ list(filter ( istrue, v)) for v in values ]
+            trues  = [ filter ( istrue, v) for v in values ]
 
             # true values 
             A, B, C = trues
@@ -182,7 +169,7 @@ class ModelTest( unittest.TestCase ):
             # insert some parentheses
             if randint(1, 100) > 30:
                 for i in range(2):
-                    half = old_div(size,2)
+                    half = size/2
                     left, right = randint(0, half), randint(half, size)
                     targets[left]  = '(' + targets[left]
                     targets[right] = targets[right] + ')'

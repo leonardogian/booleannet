@@ -1,16 +1,6 @@
 """
 Grammar file for a boolean parser based on PLY
 """
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import map
-from builtins import *
-from builtins import object
-from past.utils import old_div
 import random, time, sys
 from boolean2 import tokenizer, util, state
 from boolean2.ply import yacc
@@ -84,7 +74,7 @@ def p_expression_tuple(p):
     if p.parser.mode == PLDE:
         p[0] = (p[2], p[4], p[6])
     else:
-        p[0] = p[2] > old_div(p[6], p[4])
+        p[0] = p[2] > p[6] / p[4]
 
 def p_expression_paren(p):
     "expression : LPAREN expression RPAREN"

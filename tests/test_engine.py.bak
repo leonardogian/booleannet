@@ -1,16 +1,3 @@
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import zip
-from builtins import map
-from builtins import filter
-from builtins import range
-from builtins import *
-from past.utils import old_div
 import sys, unittest, string
 from random import randint, choice
 from itertools import *
@@ -18,8 +5,8 @@ from itertools import *
 # import path fixup
 sys.path.append( '..' )
 
-import boolean2 as boolean
-from boolean2.functional import *
+import boolean
+from boolean.functional import *
 
 #
 # helper functions
@@ -40,19 +27,19 @@ def get_states( mode, text, steps, missing=None):
     eng.iterate( steps=steps )
     return eng.states
             
-class ModelTest( unittest.TestCase ):
+class EngineTest( unittest.TestCase ):
     
     def test_plde_engine( self ):
-        "Testing PLDE (no ranks)"
+        "Testing PLDE"
         
         EQ = self.assertEqual
 
         text = """
         A = B = True
         C = False
-        A* = A
-        B* = A and B
-        C* = not C
+        1: A* = A
+        2: B* = A and B
+        3: C* = not C
         """
         eng  = boolean.Model( mode='plde', text=text )
         eng.initialize()
@@ -62,15 +49,15 @@ class ModelTest( unittest.TestCase ):
 
     
     def test_initializer( self ):
-        "Testing initializer (no ranks)"
+        "Testing initializer"
         
         EQ = self.assertEqual
 
         text = """
         A = False
-        A* = A
-        B* = A and B
-        C* = not C
+        1: A* = A
+        2: B* = A and B
+        3: C* = not C
         """
         eng  = boolean.Model( mode='sync', text=text )
         eng.initialize( missing= boolean.util.allfalse, defaults=dict(A=True, B=True) )
@@ -80,7 +67,7 @@ class ModelTest( unittest.TestCase ):
         EQ( eng.start.C, False )
         EQ( len(eng.states), 11)
 
-    def test_model( self ):
+    def test_engine( self ):
         "Basic operation"
         
         EQ = self.assertEqual
@@ -88,9 +75,9 @@ class ModelTest( unittest.TestCase ):
         text = """
         A = B = True
         C = False
-        A* = A
-        B* = A and B
-        C* = not C
+        1: A* = A
+        2: B* = A and B
+        3: C* = not C
         """
         eng  = boolean.Model( mode='sync', text=text )
         eng.initialize()
@@ -105,16 +92,16 @@ class ModelTest( unittest.TestCase ):
         EQ( eng.last.C, True )
 
     def test_eninge_modes( self ):
-        "Testing engine modes (no ranks)"
+        "Testing engine modes"
 
         EQ = self.assertEqual
 
         text = """
         A = B = True
         C = False
-        A* = A
-        B* = A and B
-        C* = not C
+        1: A* = A
+        2: B* = A and B
+        3: C* = not C
         """
 
         for mode in ( 'sync', 'async' ):
@@ -125,13 +112,13 @@ class ModelTest( unittest.TestCase ):
                 EQ( state.A, True )
 
             # create extractor functions
-            #funcs  = [ partial( get, attr=attr ) for attr in 'ABC' ]
-            funcs = []
+            funcs  = [ partial( get, attr=attr ) for attr in 'ABC' ]
+
             # map to the data
-            values = [ list(map( f, states )) for f in funcs ]
+            values = [ map( f, states ) for f in funcs ]
             
             # filter for true value
-            trues  = [ list(filter ( istrue, v)) for v in values ]
+            trues  = [ filter ( istrue, v) for v in values ]
 
             # true values 
             A, B, C = trues
@@ -143,7 +130,7 @@ class ModelTest( unittest.TestCase ):
             EQ( len(C), 3)
         
     def test_rules( self ):
-        """Testing rules (stress test, no ranks)
+        """Testing rules (stress test)
         
         Generates lots of random rules and then compares the results 
         when executed in python and with the engine
@@ -182,7 +169,7 @@ class ModelTest( unittest.TestCase ):
             # insert some parentheses
             if randint(1, 100) > 30:
                 for i in range(2):
-                    half = old_div(size,2)
+                    half = size/2
                     left, right = randint(0, half), randint(half, size)
                     targets[left]  = '(' + targets[left]
                     targets[right] = targets[right] + ')'
@@ -209,7 +196,7 @@ class ModelTest( unittest.TestCase ):
         newts = [ 'n%s' % node for node in nodes ]
         for line, newt, node in zip(body, newts, nodes):
             py_text.append( '%s = %s' % (newt, line) )    
-            bool_text.append( '%s* = %s' % (node, line) )    
+            bool_text.append( '1: %s* = %s' % (node, line) )    
 
         # needs this to emulate synchronous updating
         py_text.append( join(nodes, sep=', ') + ' = ' + join( newts, sep=', ') )
@@ -221,9 +208,9 @@ class ModelTest( unittest.TestCase ):
         # execute the code in python for a number of steps
         # having too many steps is bad as it falls into a steady state
         steps = 4
-        exec(init_text)
+        exec (init_text)
         for i in range( steps ):
-            exec(str(py_text in locals()))
+            exec (py_text in locals())
         
         # see the full text here
         #print full_text
@@ -243,7 +230,7 @@ class ModelTest( unittest.TestCase ):
             EQ( oldval, newval )
 
 def get_suite():
-    suite = unittest.TestLoader().loadTestsFromTestCase( ModelTest )
+    suite = unittest.TestLoader().loadTestsFromTestCase( EngineTest )
     return suite
 
 if __name__ == '__main__':

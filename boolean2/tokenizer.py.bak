@@ -2,23 +2,13 @@
 Main tokenizer.
 """
 from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import map
-from builtins import filter
-from builtins import *
-from builtins import object
 from itertools import *
 import sys, random
 from boolean2 import util
 from boolean2.ply import lex
 
 
-class Lexer(object):
+class Lexer:
     """
     Lexer for boolean rules
     """

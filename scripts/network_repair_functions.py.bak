@@ -12,16 +12,6 @@ Python Version: 2.7.x
 Date: April 2014 (last updated August 2014)
 '''
 from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import map
-from builtins import str
-from builtins import zip
-from builtins import range
-from builtins import *
 import networkx as nx
 import numpy as np
 from itertools import product
@@ -118,7 +108,7 @@ def find_attractor(graph,state=False):
     else: trajectory = [state]                                                                          # Provided starting state
 
     while True:
-        trajectory += [list(map(update_state,list(range(len(nodes)))))]
+        trajectory += [list(map(update_state,range(len(nodes))))]
         if graph.graph['knockout'] != None: trajectory[-1][nodes.index(graph.graph['knockout'])] = '0'  # If a node has been knocked out, it must be 0 even if it would normally be active
         elif graph.graph['express'] != None: trajectory[-1][nodes.index(graph.graph['express'])] = '1'  # "  " "    "   "    expressed,   "  "    "  1 "    "  "  "     "        "  inactive
         if trajectory[-1] in trajectory[:-1]:                                                           # Return a list of [next state, attractor], once attractor is found (attractor list length 1 in case of SS)
@@ -434,40 +424,40 @@ def evaluate_repair(graph,a,a_s=None,method='fix_to_SS'):
 
             if len(modification) == 4: ex_index = g_r.node[node]['update_nodes'].index(modification[-2])        # Slot in 'update_rule' keys that corresponds to the existing node whose edge is being modified
             #adding an "... OR p_n". So all rules where the final entry is a 1 must have an output of 1
-            if modification[0] == 1 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '0' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            if modification[0] == 1 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '0' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND a_n". So all rules where the final entry is a 0 must have an output of 0
-            elif modification[0] == 1 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 1 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR NOT a_n". So all rules where the final entry is a 0 must have an output of 1
-            elif modification[0] == 2 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 2 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND NOT p_n". So all rules where the final entry is a 1 must have an output of 0
-            elif modification[0] == 2 and modification[1] == 0: g_r.node[node]['update_rules']  = {key:(val if key[-1] == '0' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 2 and modification[1] == 0: g_r.node[node]['update_rules']  = {key:(val if key[-1] == '0' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (p AND p_n)". So all rules where the existing and new node entries are both 1 must have an output of 1
-            elif modification[0] == 3 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 3 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (a OR a_n)". So all rules where the existing and new node entries are both 0 must have an output of 0
-            elif modification[0] == 3 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 3 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (p AND NOT a_n)". So all rules where the existing and new node entries are '10' must have an output of 1
-            elif modification[0] == 4 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 4 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (a OR NOT p_n)". So all rules where the existing and new node entries are '01' must have an output of 0
-            elif modification[0] == 4 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 4 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (NOT a AND p_n)". So all rules where the existing and new node entries are '01' must have an output of 1
-            elif modification[0] == 5 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 5 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (NOT p OR a_n)". So all rules where the existing and new node entries are '10' must have an output of 0
-            elif modification[0] == 5 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 5 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (NOT a AND NOT a_n)". So all rules where the existing and new node entries are both 0 must have an output of 1
-            elif modification[0] == 6 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 6 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (NOT p OR NOT p_n)". So all rules where the existing and new node entries are both 1 must have an output of 0
-            elif modification[0] == 6 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 6 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
         a_r = find_attractor(g_r,a)
         if len(a_r[1]) > 1: raise RuntimeError('LC found in fix_to_SS()')
@@ -575,40 +565,40 @@ def evaluate_repair(graph,a,a_s=None,method='fix_to_SS'):
             if len(modification) == 4: ex_index = g_r.node[node]['update_nodes'].index(modification[-2])     #slot in 'update_rule' keys that corresponds to the existing node whose edge is being modified
 
             #adding an "... OR p_n". So all rules where the final entry is a 1 must have an output of 1
-            if modification[0] == 1 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '0' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            if modification[0] == 1 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '0' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND a_n". So all rules where the final entry is a 0 must have an output of 0
-            elif modification[0] == 1 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 1 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR NOT a_n". So all rules where the final entry is a 0 must have an output of 1
-            elif modification[0] == 2 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 2 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[-1] == '1' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND NOT p_n". So all rules where the final entry is a 1 must have an output of 0
-            elif modification[0] == 2 and modification[1] == 0: g_r.node[node]['update_rules']  = {key:(val if key[-1] == '0' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 2 and modification[1] == 0: g_r.node[node]['update_rules']  = {key:(val if key[-1] == '0' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (p AND p_n)". So all rules where the existing and new node entries are both 1 must have an output of 1
-            elif modification[0] == 3 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 3 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (a OR a_n)". So all rules where the existing and new node entries are both 0 must have an output of 0
-            elif modification[0] == 3 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 3 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (p AND NOT a_n)". So all rules where the existing and new node entries are '10' must have an output of 1
-            elif modification[0] == 4 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 4 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (a OR NOT p_n)". So all rules where the existing and new node entries are '01' must have an output of 0
-            elif modification[0] == 4 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 4 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (NOT a AND p_n)". So all rules where the existing and new node entries are '01' must have an output of 1
-            elif modification[0] == 5 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 5 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '0' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (NOT p OR a_n)". So all rules where the existing and new node entries are '10' must have an output of 0
-            elif modification[0] == 5 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 5 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '1' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... OR (NOT a AND NOT a_n)". So all rules where the existing and new node entries are both 0 must have an output of 1
-            elif modification[0] == 6 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 1) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 6 and modification[1] == 1: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '1' or key[-1] == '1' else 1) for key,val in g_r.node[node]['update_rules'].items()}
 
             #adding an "... AND (NOT p OR NOT p_n)". So all rules where the existing and new node entries are both 1 must have an output of 0
-            elif modification[0] == 6 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 0) for key,val in list(g_r.node[node]['update_rules'].items())}
+            elif modification[0] == 6 and modification[1] == 0: g_r.node[node]['update_rules'] = {key:(val if key[ex_index] == '0' or key[-1] == '0' else 0) for key,val in g_r.node[node]['update_rules'].items()}
 
         a_r = find_attractor(g_r,a[-1])                                             #Find attractor from one of the LC states
 
@@ -655,7 +645,7 @@ def write_dict_to_file(d,n,fname=False,console_dump=False):
     node, but rather ensures that is follows the prescribed oscillations.
     '''
     out = ''
-    for node in list(d.keys()):
+    for node in d.keys():
         out+='Modifications for node '+n[node]+':\n'
         for entry in d[node]:
             if entry[0] == 1 and entry[1] == 0: out+= '\tAdjust to %s via: ... AND %s\t(absent_new)\n'%(entry[1],n[entry[-1]])
